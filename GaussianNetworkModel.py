@@ -1,27 +1,24 @@
-import prody as pr
-import matplotlib
+from prody import *
+import matplotlib.pylab as pl
 
-
-# def GNM(protein):
-#     protein = pr.parsePDB(protein)
-#     calphas = protein.select('calpha')
-#     gnm = pr.GNM()
-#     gnm.buildKirchhoff(calphas)
-#     # gnm.getKirchhoff()
-#     gnm.calcModes(None)
-#     return gnm
-#
-# print(GNM("alphafold/Q9UM73.pdb"))
-
-
-protein = pr.parsePDB("alphafold/2yhw.pdb")
-gnm = pr.GNM()
+protein = parsePDB('alphafold/2yhw.pdb')
 calphas = protein.select('calpha')
+gnm = GNM()
 gnm.buildKirchhoff(calphas)
-gnm.calcModes(50)
-# hinges = pr.calcHinges(gnm)
-# print(pr.calcDistFlucts(gnm))
-pr.calcSqFlucts(gnm)
+gnm.calcModes(None)
 
-#pr.showCrossCorr(gnm)
-pr.showSqFlucts(gnm[0])
+# Fem servir el mode 0 per calcular perq és el que descriu millor el moviment
+
+SqFlucts = calcSqFlucts(gnm[0])
+NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
+
+
+pl.figure()
+showCrossCorr(gnm)
+pl.savefig('crosscorrelations.png')
+
+pl.figure()
+showNormedSqFlucts(gnm[0]) # plot sq fluct normalitzades
+pl.savefig('normSqFlucts.png')
+
+print(NormSqFlucts)

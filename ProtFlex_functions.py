@@ -1,8 +1,14 @@
 import urllib as urllib
 import sys
-import ProDy as prody
+# import ProDy as prody
 
-i = 0
+
+
+class IncorrectInput(NameError):
+	def __init__(self,input):
+		self.input = input
+	def __str__(self):
+		return "The name %s is not a a formatted FASTA file " %(self.input)
 
 class Protein(object):
     def __init__(self, uniprotID):
@@ -12,6 +18,8 @@ class Protein(object):
         url = ('https://alphafold.ebi.ac.uk/files/AF-%s-F1-model_v2.pdb' %(self.uniprotID))
         req = urllib.request.urlretrieve(url, 'alphafold/%s.pdb' %(self.uniprotID))
         return 'alphafold/%s.pdb' %(self.uniprotID)
+
+
 
 
 def get_IDs_from_file(uniprot_filename):
@@ -26,11 +34,6 @@ def get_IDs_from_file(uniprot_filename):
                 except:
                      sys.stderr.write("Incorrect Uniprot ID file input\n")
 
-
-# Faig una llista i hi guardo tots els uniprotIDs del document input com protein objects
-input_query = []
-for protein in get_IDs_from_file("uniprotIDs.txt"):
-    input_query.append(protein.uniprotID)
 
 
 
