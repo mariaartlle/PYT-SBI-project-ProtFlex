@@ -5,26 +5,7 @@ from Bio.Blast import NCBIXML
 
 
 
-def process_FASTA(fasta_provided):
-    '''
-    Performs a BLASTP of the sequence in the provided FASTA against the swissprot database.
-    Returns the uniprotID of the hit with lowest e-value.
-    '''
-    print('lets blastp')
-    result_handle = NCBIWWW.qblast("blastp", "swissprot", fasta_provided)
-    print('blastp finished')
-    with open("my_blast.xml", "w") as out_handle:
-        out_handle.write(result_handle.read())
-    result_handle = open("my_blast.xml")
-    print('reading XML')
-    blast_record = NCBIXML.read(result_handle)
 
-    for alignment in blast_record.alignments:
-        # for hsp in alignment.hsps:
-        print('processing alignments')
-        uniprotID = alignment.title[3:9]
-        break
-    return uniprotID
 
 
             # E_VALUE_THRESH = 0.0001
