@@ -6,6 +6,7 @@ from Bio.Blast import NCBIWWW
 from Bio.Blast import NCBIXML
 from prody import *
 import matplotlib.pylab as pl
+import re
 
 class IncorrectInput(NameError):
 	def __init__(self,input):
@@ -56,14 +57,28 @@ def FASTA_to_UniprotID(fasta_provided):
     return Protein(uniprotID, sequence = fasta_provided)
 
 
-def get_NormSqFluct(protein):
+def get_NormSqFluct(protein, name = 'Unknown'):
     calphas = protein.select('calpha')
-    gnm = GNM()
+    gnm = GNM(name = name)
     gnm.buildKirchhoff(calphas)
     gnm.calcModes(None)
+    hinges = calcHinges(gnm[0])
     SqFlucts = calcSqFlucts(gnm[0])
     NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
+
+    pl.figure()
+    showNormedSqFlucts(gnm[0], hinges=True) # plot sq fluct normalitzades
+    pl.savefig('NormSqFlucts.png')
+
     return NormSqFlucts
+
+def get_calphaPDB(pdbfile):
+    with open(pdbfile, 'r') as fd:
+        for line in fd:
+            if re.search(r'^ATOM\s+\d+\s+CA\s+', line):
+                yield line
+
+
 
 
 def get_IDs_from_file(uniprot_filename):

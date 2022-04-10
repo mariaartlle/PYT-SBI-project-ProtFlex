@@ -55,17 +55,26 @@ protein = Protein('P06401', 'MTELKAKGPRAPHVAGGPPSPEVGSPLLCRPAAGPFPGSQTSDTLPEVSAI
 
 ### Retrieve alphafold structure from UniprotID ###
 
-protein = parsePDB(protein.get_alphafold_structure())
+protein_str = parsePDB(protein.get_alphafold_structure())
+
 
 ### Retrieve Normalized Square fluctuactions from protein using GNM model ###
 logging.info('GNM model construction')
-protein_NSF = get_NormSqFluct(protein)
+
+protein_NSF = get_NormSqFluct(protein_str, name = str(protein.get_uniprotID()))
 
 ### Output formatting ###
 
-
-
-#
-# outputfile = open("")
+with open('out.txt', 'w') as outfile:
+    outfile.write('ProtFlex parseable output file\n')
+    outfile.write('AT\tAA\tCH\tN\tNormSqFluct\n')
+    i = 0
+    for element in get_calphaPDB(protein.get_alphafold_structure()):
+        element_nice = element.split()[2:6]
+        for x in element_nice:
+            outfile.write('%s\t' %(x))
+        outfile.write('%.5e\t' %(protein_NSF[i]))
+        outfile.write('\n')
+        i += 1
 
 logging.info('ProtFlex successfully executed')
