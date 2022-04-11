@@ -15,27 +15,24 @@ class IncorrectInput(NameError):
 		return "%s is not a formatted FASTA file" %(self.__input)
 
 class Protein(object):
-    def __init__(self, uniprotID, sequence):
+    def __init__(self, uniprotID):
         self.__uniprotID = uniprotID
-        self.__sequence = sequence
 
     def __str__(self):
-        return '(%s, %s)' %(self.__uniprotID, self.__sequence)
+        return '(%s)' %(self.__uniprotID)
 
     def get_uniprotID(self):
         return self.__uniprotID
 
-    def get_sequence(self):
-        return self.__sequence
-
     def get_alphafold_structure(self):
         '''
-        Retrieve structure with UniprotID from alphafold database
+        Retrieve structure with UniprotID from alphafold database.
         '''
         url = ('https://alphafold.ebi.ac.uk/files/AF-%s-F1-model_v2.pdb' %(self.__uniprotID))
         req = urllib.request.urlretrieve(url, '%s.pdb' %(self.__uniprotID))
-        logging.info('Alphafold structure retrieved')
+        logging.info('%s Alphafold structure retrieved' %(self.__uniprotID))
         return '%s.pdb' %(self.__uniprotID)
+
 
 def FASTA_to_UniprotID(fasta_provided):
     '''
@@ -54,47 +51,39 @@ def FASTA_to_UniprotID(fasta_provided):
         break
     logging.info('BLASTP finished')
     os.remove("my_blast.xml")
-    return Protein(uniprotID, sequence = fasta_provided)
+    return Protein(uniprotID)
 
 
-def get_NormSqFluct(protein, name = 'Unknown'):
-    calphas = protein.select('calpha')
-    gnm = GNM(name = name)
-    gnm.buildKirchhoff(calphas)
-    gnm.calcModes(None)
-    hinges = calcHinges(gnm[0])
-    SqFlucts = calcSqFlucts(gnm[0])
-    NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
+def get_NormSqFluct(protein, graph = None, name = 'Unknown'):
+	'''
+	Performs a Gaussian Network Model from PDB coordinates and returns the
+	normalized Square fluctuations for each alpha carbon of the protein provided.
+	The SqFlucts are calculated using the first mode (the slowest one).
+	Also saves in the current directory a graphical representation if defined.
+	'''
+	calphas = protein.select('calpha')
+	gnm = GNM(name = name)
+	gnm.buildKirchhoff(calphas)
+	gnm.calcModes(None)
+	hinges = calcHinges(gnm[0])
+	SqFlucts = calcSqFlucts(gnm[0])
+	NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
 
-    pl.figure()
-    showNormedSqFlucts(gnm[0], hinges=True) # plot sq fluct normalitzades
-    pl.savefig('NormSqFlucts.png')
+	if graph != None:
+		pl.figure()
+		showNormedSqFlucts(gnm[0], hinges=True)
+		pl.savefig('%s_NormSqFlucts.png' %(name))
+		logging.info('Graphical representation of protein flexibility in %s_NormSqFlucts.png' %(name))
 
-    return NormSqFlucts
+	return NormSqFlucts
+
 
 def get_calphaPDB(pdbfile):
-    with open(pdbfile, 'r') as fd:
-        for line in fd:
-            if re.search(r'^ATOM\s+\d+\s+CA\s+', line):
-                yield line
-
-
-
-
-def get_IDs_from_file(uniprot_filename):
-    ''' A generator function that reads a file with uniprotIds.
-    In each iteration the function returns a protein object'''
-    with open(uniprot_filename, 'r') as file:
-        for line in file:
-            uniprotID = line.strip()
-            if len(uniprotID) > 0:
-                try:
-                    yield Protein(uniprotID)
-                except:
-                     sys.stderr.write("Incorrect Uniprot ID file input\n")
-
-
-
-
-if __name__ == "__main__":
-    print(str(protein.get_alphafold_structure()))
+	'''
+	Generator function to obtain a alpha carbon pdb file.
+	When provided a pdb filepath, yields each alpha carbon line.
+	'''
+	with open(pdbfile, 'r') as fd:
+		for line in fd:
+			if re.search(r'^ATOM\s+\d+\s+CA\s+', line):
+				yield line
