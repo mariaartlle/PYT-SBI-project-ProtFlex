@@ -68,16 +68,10 @@ def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
 	gnm = GNM(name = name)
 	gnm.buildKirchhoff(calphas)
 	gnm.calcModes(None)
-	hinges = calcHinges(gnm[0])
 	SqFlucts = calcSqFlucts(gnm[0])
 	NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
 
 	if graph != None:
-		# pl.figure()
-		# showNormedSqFlucts(gnm[0], hinges=True)
-		# pl.savefig('%s_NormSqFlucts.png' %(name))
-		# logging.info('Graphical representation of protein flexibility in %s_NormSqFlucts.png' %(name))
-		# fig, (ax1, ax2) = pl.subplots(nrows=2, ncols=1)
 		nCA = []
 		num = []
 		colors = []
