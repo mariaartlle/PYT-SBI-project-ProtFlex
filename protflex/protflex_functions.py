@@ -72,6 +72,7 @@ def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
 	NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
 
 	if graph != None:
+		# Collecting data
 		nCA = []
 		num = []
 		colors = []
@@ -87,22 +88,12 @@ def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
 				colors.append('cyan')
 			else:
 				colors.append('darkblue')
-
-
+		# Figure disposition
 		fig = pl.figure(figsize=(15, 15))
-
 		fig, (ax1, ax2, ax3) = pl.subplots(3, 1, gridspec_kw={'height_ratios': [0.25, 1, 4]})
-
-		ax2.set_ylabel('pLDDT')
-
-		ax3.set_ylabel('Normalized Square fluctuations')
-		ax3.set_xlabel('%s residues' %(name))
-		ax1.set_title('Slowest mode from %s GNM' %(name))
-
-
+		# Colorbar
 		cmap = (mpl.colors.ListedColormap(['orange', 'yellow', 'cyan', 'darkblue']))
 		bounds = [0, 50, 70, 90, 100]
-
 		norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 		fig.colorbar(
 		    mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
@@ -112,11 +103,15 @@ def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
 		    spacing='proportional',
 		    orientation='horizontal',
 		)
-
+		# Subplot formatting
+		ax1.set_title('Slowest mode from %s GNM' %(name))
+		ax2.set_ylabel('pLDDT')
+		ax3.set_ylabel('Normalized Square fluctuations')
+		ax3.set_xlabel('%s residues' %(name))
 		ax2.tick_params(left = False, right = False , labelleft = False)
 		ax2.set_xlabel('', fontsize = 5)
 
-
+		# Plotting data
 		ax2.scatter(nCA, num, c=colors, alpha=1)
 		ax3.plot(nCA, NormSqFlucts, linewidth=1.5)
 

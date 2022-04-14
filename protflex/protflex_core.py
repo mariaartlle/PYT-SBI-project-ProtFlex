@@ -1,6 +1,7 @@
 ### Modules ###
 from protflex_functions import *
 import argparse
+import shutil
 
 def arguments():
     '''
@@ -90,15 +91,15 @@ def main():
         protein_NSF = get_NormSqFluct(protein_str, name = str(protein.get_uniprotID()))
 
     ### Output formatting ###
-
+    name = protein.get_uniprotID()
     if args.outputfile:
         fd = args.outputfile
     else:
-        fd = 'ProtFlex_%s_out.txt' %(protein.get_uniprotID())
+        fd = 'ProtFlex_%s_out.txt' %(name)
 
     with open(fd, 'w') as outfile:
         outfile.write('ProtFlex parseable output file\n')
-        outfile.write('Analyzed protein: %s\n' %(protein.get_uniprotID()))
+        outfile.write('Analyzed protein: %s\n' %(name))
         outfile.write('AT\tAA\tCH\tN\tpLDDT\tNormSqFluct\n')
         i = 0
         for element in get_calphaPDB(protein_str):
@@ -112,6 +113,15 @@ def main():
     os.remove('%s' %(protein_str))
     logging.info('Output saved in %s' %(fd))
     logging.info('ProtFlex successfully executed')
+    if os.path.isdir('%s_output' %(name)):
+        shutil.move('%s' %(fd), '%s_output/%s' %(name,fd))
+        shutil.move('%s_out.png' %(name), '%s_output/%s_out.png' %(name, name))
+
+    else:
+        os.makedirs('%s_output' %(name))
+        shutil.move('%s' %(fd), '%s_output/%s' %(name,fd))
+        shutil.move('%s_out.png' %(name), '%s_output/%s_out.png' %(name, name))
+
 
 if __name__ == '__main__':
     main()
