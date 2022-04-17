@@ -33,6 +33,13 @@ def arguments():
                         required = False,
                         help = 'Optional argument. If defined, the program will provide a graphical representation of the flexibility scores.')
 
+    optional_arg.add_argument( '-pdb',
+                        dest = 'pdb',
+                        action = 'store',
+                        default = None,
+                        required = False,
+                        help = 'Optional argument. It must be a X-ray christallography PDB ID. If defined, the graphical representation will include the normalised experimental factors of the PDB file. ')
+
     return parser.parse_args()
 
 def logger():
@@ -86,16 +93,24 @@ def main():
 
     logging.info('GNM model construction')
     if args.graph:
-        protein_NSF = get_NormSqFluct(protein_str, graph = 1, name = str(protein.get_uniprotID()))
+        if args.pdb:
+            pdbfile = fetchPDB(str(args.pdb.upper()), compressed=False)
+            NormBfactors = get_NormBfactors(pdbfile)
+            protein_NSF = get_NormSqFlucts(protein_str, graph = 1, pdbfile = pdbfile, Bfactors = NormBfactors , name = str(protein.get_uniprotID()))
+            os.remove(pdbfile)
+        else:
+            protein_NSF = get_NormSqFlucts(protein_str, graph = 1, name = str(protein.get_uniprotID()))
     else:
-        protein_NSF = get_NormSqFluct(protein_str, name = str(protein.get_uniprotID()))
+        protein_NSF = get_NormSqFlucts(protein_str, name = str(protein.get_uniprotID()))
 
     ### Output formatting ###
-    name = protein.get_uniprotID()
+    name = str(protein.get_uniprotID())
     if args.outputfile:
         fd = args.outputfile
     else:
         fd = 'ProtFlex_%s_out.txt' %(name)
+
+    logging.info('Generating output text file')
 
     with open(fd, 'w') as outfile:
         outfile.write('ProtFlex parseable output file\n')
@@ -107,12 +122,12 @@ def main():
             for x in element_nice:
                 outfile.write('%s\t' %(x))
             outfile.write('%s\t' %(element.split()[10]))
-            outfile.write('%.5e\t' %(protein_NSF[i]))
+            outfile.write('%.3f\t' %(protein_NSF[i]))
             outfile.write('\n')
             i += 1
-    os.remove('%s' %(protein_str))
-    logging.info('Output saved in %s' %(fd))
-    logging.info('ProtFlex successfully executed')
+    os.remove(protein_str)
+
+
     if os.path.isdir('%s_output' %(name)):
         shutil.move('%s' %(fd), '%s_output/%s' %(name,fd))
         shutil.move('%s_out.png' %(name), '%s_output/%s_out.png' %(name, name))
@@ -121,6 +136,9 @@ def main():
         os.makedirs('%s_output' %(name))
         shutil.move('%s' %(fd), '%s_output/%s' %(name,fd))
         shutil.move('%s_out.png' %(name), '%s_output/%s_out.png' %(name, name))
+
+    logging.info('Output saved in %s' %(fd))
+    logging.info('ProtFlex successfully executed')
 
 
 if __name__ == '__main__':

@@ -1,14 +1,16 @@
 import sys
 import os
-import urllib as urllib
+import re
 import logging
+import urllib as urllib
 from Bio.Blast import NCBIWWW
 from Bio.Blast import NCBIXML
+from statistics import stdev
 from prody import *
 import matplotlib as mpl
 import matplotlib.pylab as pl
 import matplotlib.gridspec as gridspec
-import re
+
 
 class IncorrectInput(NameError):
 	def __init__(self,input):
@@ -51,28 +53,59 @@ def FASTA_to_UniprotID(fasta_provided):
     for alignment in blast_record.alignments:
         uniprotID = alignment.title[3:9]
         break
-    logging.info('BLASTP finished')
+    logging.info('BLASTP finished, best hit: %s' %(uniprotID))
     os.remove("my_blast.xml")
     return Protein(uniprotID)
 
+def get_calphaPDB(pdbfile):
+	'''
+	Generator function to obtain a alpha carbon pdb file.
+	When provided a pdb filepath, yields each alpha carbon line.
+	'''
+	with open(pdbfile, 'r') as fd:
+		for line in fd:
+			if re.search(r'^ATOM\s+\d+\s+CA\s+', line):
+				yield line
 
-def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
+
+def get_NormBfactors(pdbfile):
+	# Experimental Bfactors (normalised)
+	logging.info('Normalising B-factors from %s' %(pdbfile))
+	Bfactors = []
+	nCA_pdb = []
+	for element in get_calphaPDB(pdbfile):
+		Bfactors.append(float(element.split()[10]))
+		nCA_pdb.append(int(element.split()[5]))
+	meanB = sum(Bfactors)/len(Bfactors)
+	stdB = stdev(Bfactors)
+	return [(x-meanB)/stdB for x in Bfactors]
+
+
+def get_NormSqFlucts(protein_structure, graph = None, pdbfile = None, Bfactors = None, name = 'Unknown'):
 	'''
 	Performs a Gaussian Network Model from PDB coordinates and returns the
 	normalized Square fluctuations for each alpha carbon of the protein provided.
 	The SqFlucts are calculated using the first mode (the slowest one).
-	Also saves in the current directory a graphical representation if defined.
+
+	If the graph argument is defined, saves in the current directory a graphical representation
+	Of the Normalised Square Fluctuations.
+
+	If both graph and the pdb are defined, the graphical representation will include also the
+	Normalised experimental B factors of the provided pdb along the Square Fluctuations.
 	'''
+    # Normalised Square fluctuations
 	protein_parsed = parsePDB(protein_structure)
 	calphas = protein_parsed.select('calpha')
 	gnm = GNM(name = name)
 	gnm.buildKirchhoff(calphas)
 	gnm.calcModes(None)
 	SqFlucts = calcSqFlucts(gnm[0])
-	NormSqFlucts = SqFlucts / (SqFlucts**2 ).sum()**0.5
+	mean_Sq = sum(SqFlucts)/len(SqFlucts)
+	std_Sq = stdev(SqFlucts)
+	NormSqFlucts = [(x-mean_Sq)/std_Sq for x in SqFlucts]
 
 	if graph != None:
-		# Collecting data
+    	# Collecting data from AF2 structure
 		nCA = []
 		num = []
 		colors = []
@@ -88,43 +121,45 @@ def get_NormSqFluct(protein_structure, graph = None, name = 'Unknown'):
 				colors.append('cyan')
 			else:
 				colors.append('darkblue')
-		# Figure disposition
-		fig = pl.figure(figsize=(15, 15))
-		fig, (ax1, ax2, ax3) = pl.subplots(3, 1, gridspec_kw={'height_ratios': [0.25, 1, 4]})
-		# Colorbar
+
+        # Figure disposition
+		fig,(ax1, ax2, ax3) = pl.subplots(3, 1, gridspec_kw={'height_ratios': [0.25, 1, 4]})
+        # Colorbar
 		cmap = (mpl.colors.ListedColormap(['orange', 'yellow', 'cyan', 'darkblue']))
 		bounds = [0, 50, 70, 90, 100]
 		norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 		fig.colorbar(
-		    mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
-		    cax=ax1,
-		    extendfrac='auto',
-		    ticks=bounds,
-		    spacing='proportional',
-		    orientation='horizontal',
-		)
-		# Subplot formatting
+			mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
+			cax=ax1,
+			extendfrac='auto',
+			ticks=bounds,
+			spacing='proportional',
+			orientation='horizontal')
+    	# Subplot formatting
 		ax1.set_title('Slowest mode from %s GNM' %(name))
 		ax2.set_ylabel('pLDDT')
-		ax3.set_ylabel('Normalized Square fluctuations')
+		ax3.set_ylabel('Normalised Square fluctuations')
 		ax3.set_xlabel('%s residues' %(name))
 		ax2.tick_params(left = False, right = False , labelleft = False)
 		ax2.set_xlabel('', fontsize = 5)
 
-		# Plotting data
-		ax2.scatter(nCA, num, c=colors, alpha=1)
-		ax3.plot(nCA, NormSqFlucts, linewidth=1.5)
+		if Bfactors != None:
+			nCA_pdb = []
+			for element in get_calphaPDB(pdbfile):
+				nCA_pdb.append(int(element.split()[5]))
 
-		pl.savefig('%s_out.png' %(name))
+            # SqFlucts and Bfactors
+			ax2.scatter(nCA, num, c=colors, alpha=1)
+			l1, = ax3.plot(nCA, NormSqFlucts, linewidth=1.5, color='blue')
+			ax4 = ax3.twinx()
+			l2, = ax4.plot(nCA_pdb, Bfactors, linewidth=1.5, color='red')
+			pl.legend([l1, l2], ["NormSqFlucts", "NormBfactors"])
+
+			pl.savefig('%s_out.png' %(name))
+		else:
+            # Plotting data
+			ax2.scatter(nCA, num, c=colors, alpha=1)
+			ax3.plot(nCA, NormSqFlucts, linewidth=1.5)
+
+			pl.savefig('%s_out.png' %(name))
 	return NormSqFlucts
-
-
-def get_calphaPDB(pdbfile):
-	'''
-	Generator function to obtain a alpha carbon pdb file.
-	When provided a pdb filepath, yields each alpha carbon line.
-	'''
-	with open(pdbfile, 'r') as fd:
-		for line in fd:
-			if re.search(r'^ATOM\s+\d+\s+CA\s+', line):
-				yield line
