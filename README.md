@@ -1,18 +1,19 @@
 # ProtFlex: Protein flexibility assessing program
 
-**ProtFlex: a python standalone program to predict and assess the flexibility of proteins.**Artigues-Lleixà M<sup>1</sup> and Torrén P<sup>1</sup>.
+**ProtFlex: a python standalone program to predict and assess the flexibility of proteins.**
+Artigues-Lleixà M<sup>1</sup> and Torrén P<sup>1</sup>.
 
 <sup>1</sup> MSc Bioinformatics for Health Sciences, Pompeu Fabra University, Barcelona, Spain. 2022.
 
 ## Table of Content
-- [What is ProtFlex?](#whatisprotflex?)
-- [Biological framework](#biologicalframework)
-- [How does ProtFlex work?](#howdoesprotflexwork? )
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Tutorial](#tutorial)
-- [Limitations](#limitations)
-- [Examples] (#examples)
+- [What is ProtFlex?](#1-what-is-protflex)
+- [Biological framework](#2-biological-framework)
+- [How does ProtFlex work?](#3-how-does-protflex-work)
+- [Requirements](#4-requirements)
+- [Installation](#5-installation)
+- [Tutorial](#6-tutorial)
+- [Limitations](#7-limitations)
+- [Examples](#8-examples)
 
 
 ## 1. What is ProtFlex?
@@ -77,9 +78,9 @@ ProtFlex is composed of two main scripts, one with the core algorithm and the ot
 
 ## 4. Requirements
 
-To work with this package a <span style="text-decoration:underline;">Python3</span> interpreter must be installed on the computer. This package has been developed using Python 3.8.10.
+To work with this package a [Python3](https://www.python.org/downloads) interpreter must be installed on the computer. This package has been developed using Python 3.8.10.
 
-ProtFlex requires the library <span style="text-decoration:underline;">BioPython</span>, can be installed using pip3:
+ProtFlex requires the library [BioPython](https://biopython.org), can be installed using pip3:
 
 ```shell
 $ pip3 install biopython
@@ -233,7 +234,7 @@ The structure is only available in the AlphaFold database. If we take a look at 
 * **ProtFlex results**
 
 
-## Regarding the ProtFlex’s results we can easily identify the N-terminal and C-terminal as the most flexible regions of this protein (they have higher flexibility scores) . We have to take into account that these regions are also the ones with lowest confidence estimates for their prediction. These results are consistent with the protein structure, as the core conformed by beta strands is much more stable and rigid than the single helices that conform the beginning and end of the protein.
+Regarding the ProtFlex’s results we can easily identify the N-terminal and C-terminal as the most flexible regions of this protein (they have higher flexibility scores) . We have to take into account that these regions are also the ones with lowest confidence estimates for their prediction. These results are consistent with the protein structure, as the core conformed by beta strands is much more stable and rigid than the single helices that conform the beginning and end of the protein.
 
 
 
