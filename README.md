@@ -177,9 +177,15 @@ Once the structure has been retrieved and parsed, a Gaussian Network Model is co
 
 As for the output results, the program creates a parseable output text file with the information of the alpha carbons used (residue name, number and chain), the confidence value of the prediction by AlphaFold (pLDDT) and the Normalised Square Fluctuation value of each aminoacid.
 
+![Parseable output text file](/images/output_file.png "Parseable output text file").
+
 If indicated in the execution of the program the user can also retrieve a graphical representation of the results.
 
+![Graphical representation of the results](/images/Q9Y223_out.png "Graphical representation of the results").
+
 If along the graph argument, the user provides an X-ray crystallography PDB structure, the graphical representation of the results will also have the experimental B-factors represented in the plot along the square fluctuations.
+
+![Representation of experimental B-factors](/images/Q9Y223_Bfactors_out.png "Representation of experimental B-factors").
 
 Throughout the program’s execution the user can follow its progress through updates in the terminal. To ensure easy problem solving, a logging file is available to the user when the program is finished.
 
@@ -210,6 +216,7 @@ P11433 corresponds to a cell division control protein (CDC24) present in Sacchar
 
 Taking a look into its structure we can rapidly identify different parts in the protein, we see a very organised core, mainly conformed by alpha helices and some other beta supersecondary structure. Enveloping this core there are two loops, both with very low confidence estimates.
 
+![P11433 AlphaFold structure](/images/AF-P11433.png "P11433 AlphaFold structure").
 
 
 * **ProtFlex results:**
@@ -218,6 +225,7 @@ The region with the higher values corresponds to the loop delimited by LYS525 an
 
 Due to the low values of the pLDDT estimate in this region we can’t say with confidence that it is the most flexible region. Since the creation of AlphaFold, there has been numerous studies trying to gain new insights in this prediction technology and its capabilities. Recently it has been seen that there is a negative correlation between the pLDDT score from AlphaFold and the main chain flexibility of proteins, meaning that highly flexible regions tend to have a lower pLDDT score [11].
 
+![P11433 ProtFlex results](/examples/EX3_Q9Y223_output/P11433_out.png "P11433 ProtFlex results").
 
 ### Example 2: P16041
 
@@ -229,13 +237,14 @@ P16041 corresponds to the protein Vasotocin-neurophysin VT1, an antidiuretic hor
 
 The structure is only available in the AlphaFold database. If we take a look at the predicted structure we can see that the core of the protein is composed mainly by beta strands, while both the extremes have a single alpha helix.
 
-
+![P16041 AlphaFold structure](/images/AF-P16041.png "P16041 AlphaFold structure").
 
 * **ProtFlex results**
 
 
 Regarding the ProtFlex’s results we can easily identify the N-terminal and C-terminal as the most flexible regions of this protein (they have higher flexibility scores) . We have to take into account that these regions are also the ones with lowest confidence estimates for their prediction. These results are consistent with the protein structure, as the core conformed by beta strands is much more stable and rigid than the single helices that conform the beginning and end of the protein.
 
+![P16041 ProtFlex results](/examples/EX2_P16041_output/P16041_out.png "P16041 ProtFlex results").
 
 
 ### Example 3: Q9Y223
@@ -248,7 +257,7 @@ Q9Y223 corresponds to a human Bifunctional UDP-N-acetylglucosamine 2-epimerase/N
 
 This protein has been partially resolved by X-ray crystallography experiments, to look at the whole structure we will analyse the AlphaFold predicted structure. The protein is formed by two differentiated domains, formed by both alpha and beta supersecondary structures. Another remarkable aspect of this structure is the binding of different substrates, zinc and ATP.
 
-
+![Q9Y223 AlphaFold structure](/images/AF-Q9Y223.png "Q9Y223 AlphaFold structure").
 
 * **ProtFlex results**
 
@@ -256,9 +265,11 @@ In comparison to the other studied proteins, the flexibility values for this pro
 
 The most studied region of this protein is the one between positions 406 and 720 and has been experimentally resolved by X-ray crystallography. For this reason it may be interesting to take a look at the experimentally determined B-factors:
 
+![Q9Y223 ProtFlex results](/examples/EX3_Q9Y223_output/Q9Y223_out.png "Q9Y223 ProtFlex results").
+
 We don’t have a reference point to compare the B-factors’ values as the protein is only partially resolved, but we can see that both the square fluctuations and B-factors have high values in this region. Also it is worth mentioning that the residue with higher value in both parameters is the same.  This region comprises all the known binding sites for zinc, ATP and multiple substrates: it is expected of this kind of region to have more flexible residues that can adopt more than one conformation to bind other agents.
 
-
+![Q9Y223 B-factors visualisation](/examples/EX3_Q9Y223_output/Q9Y223_Bfactors_out.png "Q9Y223 B-factors visualisation").
 
 ### Example 4: Q9VVG4
 
@@ -270,13 +281,13 @@ Q9VVG4 corresponds to the Exocyst complex component 1 of _Drosophila melanogaste
 
 This protein has not been resolved by any empirical method so we only have the predicted structure available in the AlphaFold database. If we take a look at it we can see that it is mainly formed by alpha helices, although the N-terminal has a beta supersecondary structure connected to the main structure with a loop.
 
-
+![Q9VVG4 AlphaFold structure](/images/AF-Q9VVG4.png "Q9VVG4 AlphaFold structure").
 
 * **ProtFlex results**
 
 The region with higher flexibility values is the N-terminal one, including both the beta structure and the loop. This region is also the one involved in binding PIP2 molecules according to the information available in Uniprot and PFAM databases. It would make sense that, since it is the domain in charge of binding other agents this region would be the one with highest flexibility scores. From residue 200 the flexibility scores barely change, taking into account that most of the residues are part form alpha helices superstructures, it wouldn’t be expected much flexibility.
 
-
+![Q9VVG4 ProtFlex results](/examples/EX4_Q9VVG4_output/Q9VVG4_out.png "Q9VVG4 ProtFlex results").
 
 ### 9. Bibliography
 
