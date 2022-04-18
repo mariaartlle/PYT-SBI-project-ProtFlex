@@ -200,7 +200,7 @@ The region with the higher values corresponds to the loop delimited by LYS525 an
 
 Due to the low values of the pLDDT estimate in this region we can’t say with confidence that it is the most flexible region. Since the creation of AlphaFold, there has been numerous studies trying to gain new insights in this prediction technology and its capabilities. Recently it has been seen that there is a negative correlation between the pLDDT score from AlphaFold and the main chain flexibility of proteins, meaning that highly flexible regions tend to have a lower pLDDT score [11].
 
-![P11433 ProtFlex results](/examples/EX3_Q9Y223_output/P11433_out.png "P11433 ProtFlex results").
+![P11433 ProtFlex results](/examples/EX1_P11433_output/P11433_out.png "P11433 ProtFlex results").
 
 ### Example 2: P16041
 
@@ -244,8 +244,6 @@ We don’t have a reference point to compare the B-factors’ values as the prot
 ### Example 4: Q9VVG4
 
 Q9VVG4 corresponds to the Exocyst complex component 1 of _Drosophila melanogaster_. This protein is involved in exocytosis processes, more specifically in the docking of exocytic vesicles onto the plasma membrane.
-
-
 
 * **AlphaFold structure**
 
