@@ -45,8 +45,8 @@ The higher performance of the GNM can be attributed to two different features: 1
 
 In conclusion, GNM is more accurate and should be chosen when evaluating the deformation magnitudes or the distribution of motions of individual residues, and that is why  ProtFlex uses GNM with Cα atoms as nodes. [5]
 
-### 2.2 Flexibility parameters: B-factors and Square Fluctuations
 
+### 2.2 Flexibility parameters: B-factors and Square Fluctuations
 
 While protein folds to a unique structure, it also fluctuates and makes thermodynamic movements. Protein molecules exhibit varying degrees of flexibility throughout their structure, with some segments showing little mobility while others may be disordered, unresolvable by techniques such as X-ray crystallography.
 
@@ -55,6 +55,7 @@ The B-factor, also called temperature factor, Debye-Waller factor, or atomic dis
 Mean square fluctuation or mean squared displacement is a measure of the deviation of the position of a particle with respect to a reference position over time. It is the most common measure of the spatial extent of random motion.
 
 We can compare the B-factors obtained in crystallography with residue mean-square fluctuations as B-factors are a consequence of the dynamic disorder in the crystal caused by the temperature-dependent vibration of the residues in the protein. However, protein crystals also have static disorder (molecules or parts of them in different unit cells do not occupy the same position or exactly the same orientation). What static disorder do is that B-factors may not always reflect the fluctuations correctly.
+
 
 ### 2.3 ProtFlex
 
@@ -67,13 +68,9 @@ When working with AlphaFold structures we have to keep in mind that they are pre
 ProtFlex is an innovative tool as up to this day, B-factors are the parameters that most programs use to obtain the flexibility of a protein, but to obtain these parameters, we have to obtain the structures by X-ray crystallography with a very good resolution for them to be reliable. Moreover, B-factors are not purely a flexibility score per se and can be very influenced; that is why we chose square mean fluctuations as our flexibility score.
 
 
-
-
-
 ## 3. How does ProtFlex work?
 
 ProtFlex is composed of two main scripts, one with the core algorithm and the other with the functions developed to perform the flexibility assessment. In the tutorial section can be found a detailed description of every part of the algorithm.
-
 
 
 ## 4. Requirements
@@ -85,7 +82,6 @@ ProtFlex requires the library [BioPython](https://biopython.org), can be install
 ```shell
 $ pip3 install biopython
 ```
-
 
 ## 5. Installation
 
@@ -103,33 +99,21 @@ Once we are inside the cloned directory, the package can be installed manually u
 $ pip3 install .
 ```
 
-
 ## 6. Tutorial
-
 
 ### Arguments description
 
-
-
 * -i / --input
 
-**Required  argument. **The input argument can be a FASTA formatted file or, alternatively, a single UniprotID code. If the input is not in the correct format, the program will raise an exception.
-
-
-
-
+**Required  argument**. The input argument can be a FASTA formatted file or, alternatively, a single UniprotID code. If the input is not in the correct format, the program will raise an exception.
 
 * -o / --output
 
 **Optional argument**. The name of the desired output file, if it already exists, the file will be overwritten, if not the program will create a new one with the name provided. If this argument is not defined the output file will be named after the UniprotID of the provided input file.
 
-
-
 * -g / --graph
 
-**Optional argument. **If this argument is defined, a graphical representation of the flexibility scores will be provided besides the parseable output text file.
-
-
+**Optional argument**. If this argument is defined, a graphical representation of the flexibility scores will be provided besides the parseable output text file.
 
 * -pdb
 
@@ -162,11 +146,9 @@ In this example we are using the UniprotID and indicating the name we want for t
 ### ProtFlex algorithm’s description
 
 
-
 * **FASTA file**
 
 When a FASTA formatted file is used as input the first step is performing a BLASTP search against the uniprot database to retrieve the best hit and its UniprotID, which will be used to retrieve its predicted AlphaFold structure (pdb file).
-
 
 
 * **UniprotID**
@@ -181,14 +163,13 @@ As for the output results, the program creates a parseable output text file with
 
 If indicated in the execution of the program the user can also retrieve a graphical representation of the results.
 
-![Graphical representation of the results](/images/Q9Y223_out.png "Graphical representation of the results").
+![Q9Y223 ProtFlex results](/examples/EX3_Q9Y223_output/Q9Y223_out.png "Q9Y223 ProtFlex results").
 
 If along the graph argument, the user provides an X-ray crystallography PDB structure, the graphical representation of the results will also have the experimental B-factors represented in the plot along the square fluctuations.
 
-![Representation of experimental B-factors](/images/Q9Y223_Bfactors_out.png "Representation of experimental B-factors").
+![Representation of experimental B-factors](/examples/EX3_Q9Y223_output/Q9Y223_Bfactors_out.png "Representation of experimental B-factors").
 
 Throughout the program’s execution the user can follow its progress through updates in the terminal. To ensure easy problem solving, a logging file is available to the user when the program is finished.
-
 
 
 ## 7. Limitations
@@ -196,10 +177,7 @@ The most important limitation of the program is that it can only assess the flex
 
 Furthermore, as we are working with predicted protein structures, we have to bear in mind the confidence in their prediction. To address this conflict, AlphaFold produces a per-residue estimate of its confidence, called pLDDT, that corresponds to the model’s predicted score on the [IDDT-Cα metric.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3799472/) This estimate goes from 0 to a 100: the regions with pLDDT >90 are expected to be modelled to high accuracy, while the ones with pLDDT between 50 and 70 should be treated with caution due to their low confidence. This metric is included in ProtFlex results, as it is crucial to understand the reliability of the flexibility scores calculated.
 
-
-
 Also, ProtFlex is designed to work only with a protein at a time, therefore, it cannot process files with multiple fasta sequences or multiple UniprotIDs.
-
 
 
 ## 8. Examples
@@ -210,14 +188,11 @@ To enlighten the reader about ProtFlex’s functionality, we have performed the 
 
 P11433 corresponds to a cell division control protein (CDC24) present in Saccharomyces cerevisiae. Its function relies on the promotion of the exchange of CDC42-bound GDP by GTP, a crucial step in the yeast mitotic cycle. It also plays a role in calcium regulation and the selection and organisation of the budding site. This protein can be found partially resolved by NMR in the PDB database. To stick to the purpose of the program we will analyse the results of the whole protein predicted by AlphaFold.
 
-
-
 * **AlphaFold structure**
 
 Taking a look into its structure we can rapidly identify different parts in the protein, we see a very organised core, mainly conformed by alpha helices and some other beta supersecondary structure. Enveloping this core there are two loops, both with very low confidence estimates.
 
 ![P11433 AlphaFold structure](/images/AF-P11433.png "P11433 AlphaFold structure").
-
 
 * **ProtFlex results:**
 
@@ -229,9 +204,7 @@ Due to the low values of the pLDDT estimate in this region we can’t say with c
 
 ### Example 2: P16041
 
-P16041 corresponds to the protein Vasotocin-neurophysin VT1, an antidiuretic hormone from a salmon species.
-
-
+P16041 corresponds to the protein Vasotocin-neurophysin VT1, an antidiuretic hormone from a salmon species
 
 * **AlphaFold structure**
 
@@ -241,7 +214,6 @@ The structure is only available in the AlphaFold database. If we take a look at 
 
 * **ProtFlex results**
 
-
 Regarding the ProtFlex’s results we can easily identify the N-terminal and C-terminal as the most flexible regions of this protein (they have higher flexibility scores) . We have to take into account that these regions are also the ones with lowest confidence estimates for their prediction. These results are consistent with the protein structure, as the core conformed by beta strands is much more stable and rigid than the single helices that conform the beginning and end of the protein.
 
 ![P16041 ProtFlex results](/examples/EX2_P16041_output/P16041_out.png "P16041 ProtFlex results").
@@ -250,8 +222,6 @@ Regarding the ProtFlex’s results we can easily identify the N-terminal and C-t
 ### Example 3: Q9Y223
 
 Q9Y223 corresponds to a human Bifunctional UDP-N-acetylglucosamine 2-epimerase/N-acetylmannosamine kinase. This protein is involved in the regulation of N-acetylneuraminic acid biosynthesis and plays an essential role in early development, as it is required to synthesise sialic acids.
-
-
 
 * **Alphafold structure**
 
